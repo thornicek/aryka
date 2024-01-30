@@ -15,14 +15,20 @@ namespace API.Controllers
             _context = context;
             
         }
+        
         [HttpGet]
-        public async Task<ActionResult<List<Novinka>>> GetArticles()
+        public async Task<ActionResult<List<Novinka>>> GetArticles([FromQuery] int page = 1, [FromQuery] int pageSize = 2)
         {
-            var novinky = await _context.Novinky.ToListAsync();
+            var skipAmount = (page - 1) * pageSize;
+
+            var novinky = await _context.Novinky
+                .Skip(skipAmount)
+                .Take(pageSize)
+                .ToListAsync();
 
             return novinky;
         }
-        
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Novinka>> GetArticle(int id)
         {
