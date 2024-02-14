@@ -34,5 +34,49 @@ namespace API.Controllers
         {
             return await _context.Novinky.FindAsync(id);
         }
+    
+        [HttpPost]
+        public async Task<ActionResult<Novinka>> CreateArticle(Novinka novinka)
+        {
+            _context.Novinky.Add(novinka);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetArticle), new { id = novinka.Id }, novinka);
+        }
+
+        
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateArticle(int id, Novinka novinka)
+        {
+            if (id != novinka.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(novinka).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ArticleExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        private bool ArticleExists(int id)
+        {
+            return _context.Novinky.Any(e => e.Id == id);
+        }
     }
 }
