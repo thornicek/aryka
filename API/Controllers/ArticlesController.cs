@@ -7,7 +7,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ArticlesController:ControllerBase
+    public class ArticlesController : ControllerBase
     {
         private readonly ArykaContext _context;
         public ArticlesController(ArykaContext context)
