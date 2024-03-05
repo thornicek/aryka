@@ -9,8 +9,8 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ArticlesController:ControllerBase
     {
-        private readonly NovinkyContext _context;
-        public ArticlesController(NovinkyContext context)
+        private readonly ArykaContext _context;
+        public ArticlesController(ArykaContext context)
         {
             _context = context;
             
@@ -78,5 +78,42 @@ namespace API.Controllers
         {
             return _context.Novinky.Any(e => e.Id == id);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAll()
+        {
+            // Retrieve all articles
+            var articles = await _context.Novinky.ToListAsync();
+
+            // Remove all articles from the context
+            _context.Novinky.RemoveRange(articles);
+
+            // Save changes
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Find the article with the given id
+            var article = await _context.Novinky.FindAsync(id);
+
+            // If the article doesn't exist, return NotFound
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            // Remove the article from the context
+            _context.Novinky.Remove(article);
+
+            // Save changes
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+    }
+
     }
 }
